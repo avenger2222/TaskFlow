@@ -6,7 +6,8 @@
 //   3. All service functions will automatically use real HTTP calls
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const RAW_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+export const BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 export const USE_MOCK_BACKEND = false; // ← Set to false when backend is ready
 
 interface ApiResponse<T> {
@@ -25,7 +26,7 @@ class ApiClient {
   private token: string | null = null;
 
   constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
+    this.baseUrl = baseUrl.replace(/\/+$/, '');
   }
 
   setToken(token: string | null) {
@@ -43,7 +44,8 @@ class ApiClient {
   }
 
   async get<T>(endpoint: string): Promise<ApiResponse<T>> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'GET',
       headers: this.getHeaders(),
     });
@@ -53,7 +55,8 @@ class ApiClient {
   }
 
   async post<T>(endpoint: string, body: object): Promise<ApiResponse<T>> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify(body),
@@ -64,7 +67,8 @@ class ApiClient {
   }
 
   async put<T>(endpoint: string, body: object): Promise<ApiResponse<T>> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'PUT',
       headers: this.getHeaders(),
       body: JSON.stringify(body),
@@ -75,7 +79,8 @@ class ApiClient {
   }
 
   async patch<T>(endpoint: string, body: object): Promise<ApiResponse<T>> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'PATCH',
       headers: this.getHeaders(),
       body: JSON.stringify(body),
@@ -86,7 +91,8 @@ class ApiClient {
   }
 
   async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${this.baseUrl}${path}`, {
       method: 'DELETE',
       headers: this.getHeaders(),
     });

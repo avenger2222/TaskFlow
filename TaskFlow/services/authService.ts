@@ -51,14 +51,7 @@ async function initMockUsers(): Promise<User[]> {
 export const authService = {
   async login(payload: LoginPayload): Promise<AuthResult> {
     if (!USE_MOCK_BACKEND) {
-      const response = await fetch(`${apiClient.baseUrl}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const res = await response.json();
-      if (!response.ok) throw new Error(res.message || 'Login failed');
-
+      const res = await apiClient.post<any>('/auth/login', payload);
       const token = res.token;
       const user = normalizeUser(res.user);
 
